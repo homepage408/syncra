@@ -97,6 +97,19 @@ CREATE TABLE
     );
 
 CREATE TABLE
+    IF NOT EXISTS roles (
+        id UUID PRIMARY KEY DEFAULT uuid_generate_v4 (),
+        workspace_id UUID NOT NULL,
+        name VARCHAR(255) NOT NULL,
+        description TEXT,
+        is_system BOOLEAN NOT NULL DEFAULT FALSE,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW (),
+        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW (),
+        deleted_at TIMESTAMPTZ,
+        FOREIGN KEY (workspace_id) REFERENCES workspaces (id) ON DELETE CASCADE
+    );
+
+CREATE TABLE
     IF NOT EXISTS workspace_members (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4 (),
         workspace_id UUID NOT NULL,
@@ -111,26 +124,13 @@ CREATE TABLE
     );
 
 CREATE TABLE
-    IF NOT EXISTS roles (
-        id UUID PRIMARY KEY DEFAULT uuid_generate_v4 (),
-        workspace_id UUID NOT NULL,
-        name VARCHAR(255) NOT NULL,
-        description TEXT,
-        is_system BOOLEAN NOT NULL DEFAULT FALSE,
-        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW (),
-        updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW (),
-        deleted_at TIMESTAMPTZ,
-        FOREIGN KEY (workspace_id) REFERENCES workspaces (id) ON DELETE CASCADE
-    );
-
-CREATE TABLE
     IF NOT EXISTS permissions (
         id UUID PRIMARY KEY DEFAULT uuid_generate_v4 (),
         code VARCHAR(255) NOT NULL UNIQUE,
         description TEXT,
         created_at TIMESTAMPTZ NOT NULL DEFAULT NOW (),
         updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW (),
-        deleted_at TIMESTAMPTZ,
+        deleted_at TIMESTAMPTZ
     );
 
 CREATE TABLE
@@ -292,4 +292,17 @@ CREATE TABLE
         deleted_at TIMESTAMPTZ,
         FOREIGN KEY (workspace_id) REFERENCES workspaces (id) ON DELETE CASCADE,
         FOREIGN KEY (actor_id) REFERENCES users (id) ON DELETE SET NULL
+    );
+
+CREATE TABLE
+    IF NOT EXISTS refresh_tokens (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid (),
+        user_id UUID NOT NULL REFERENCES users (id) ON DELETE CASCADE,
+        token TEXT NOT NULL,
+        expires_at TIMESTAMP
+        WITH
+            TIME ZONE NOT NULL,
+            created_at TIMESTAMP
+        WITH
+            TIME ZONE DEFAULT now ()
     );

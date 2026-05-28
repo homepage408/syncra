@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	app, err := bootstrap.NewApplication()
+	app, err := bootstrap.NewApplication(context.Background())
 	if err != nil {
 		log.Fatal(err)
 	}
