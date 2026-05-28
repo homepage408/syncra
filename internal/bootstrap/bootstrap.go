@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
+	"log"
 
 	"github.com/homepage408/syncra/config"
 	"github.com/homepage408/syncra/db/sqlc"
@@ -14,6 +15,7 @@ import (
 	postRepo "github.com/homepage408/syncra/internal/domains/post/infrastructure/persistence"
 	postRest "github.com/homepage408/syncra/internal/domains/post/interface/rest"
 	"github.com/homepage408/syncra/pkg/logger"
+	"github.com/joho/godotenv"
 )
 
 type Application struct {
@@ -24,6 +26,11 @@ type Application struct {
 
 // NewApplication - Main DI Container
 func NewApplication(ctx context.Context) (*Application, error) {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	// ✅ STEP 1: Load configuration (independent)
 	cfg, err := config.Load()
 	if err != nil {
