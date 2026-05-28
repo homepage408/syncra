@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"os"
 )
 
@@ -14,10 +13,6 @@ func Load() (*Config, error) {
 	}
 
 	cfg.Database.DSN = os.Getenv("DATABASE_DSN")
-	fmt.Println("DATABASE_DSN:", cfg.Database.DSN)
-	// if cfg.Database.DSN == "" {
-	// 	cfg.Database.DSN = ""
-	// }
 
 	cfg.Database.MaxOpenConns = 20
 	cfg.Database.MaxIdleConns = 10
