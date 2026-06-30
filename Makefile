@@ -11,7 +11,7 @@ sqlc:
 	sqlc generate
 
 gqlgen:
-	go run github.com/99designs/gqlgen generate
+	go run github.com/99designs/gqlgen@v0.17.90 generate
 
 migrate-up:
 	migrate -path db/migrations \

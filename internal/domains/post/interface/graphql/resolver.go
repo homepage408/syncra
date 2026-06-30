@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	postUsecase "github.com/homepage408/syncra/internal/domains/post/application/usecase"
+	postUsecase "github.com/homepage408/syncra/internal/domains/post/usecase"
 )
 
 type Post struct {

@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/homepage408/syncra/internal/domains/auth/application/usecase"
+	"github.com/homepage408/syncra/internal/domains/auth/usecase"
 	"github.com/homepage408/syncra/pkg/logger"
 )
 
