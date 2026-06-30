@@ -8,12 +8,12 @@ import (
 
 	"github.com/homepage408/syncra/config"
 	"github.com/homepage408/syncra/db/sqlc"
-	authUsecase "github.com/homepage408/syncra/internal/domains/auth/application/usecase"
 	authRepo "github.com/homepage408/syncra/internal/domains/auth/infrastructure/persistence"
 	authRest "github.com/homepage408/syncra/internal/domains/auth/interface/rest"
-	postUsecase "github.com/homepage408/syncra/internal/domains/post/application/usecase"
+	authUsecase "github.com/homepage408/syncra/internal/domains/auth/usecase"
 	postRepo "github.com/homepage408/syncra/internal/domains/post/infrastructure/persistence"
 	postRest "github.com/homepage408/syncra/internal/domains/post/interface/rest"
+	postUsecase "github.com/homepage408/syncra/internal/domains/post/usecase"
 	"github.com/homepage408/syncra/pkg/logger"
 	"github.com/joho/godotenv"
 )
