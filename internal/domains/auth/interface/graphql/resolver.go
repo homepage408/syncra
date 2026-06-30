@@ -3,7 +3,7 @@ package gql
 import (
 	"context"
 
-	authUsecase "github.com/homepage408/syncra/internal/domains/auth/application/usecase"
+	authUsecase "github.com/homepage408/syncra/internal/domains/auth/usecase"
 )
 
 type AuthPayload struct {

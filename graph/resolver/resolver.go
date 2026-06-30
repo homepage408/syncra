@@ -1,8 +1,8 @@
 package resolver
 
 import (
-	authUsecase "github.com/homepage408/syncra/internal/domains/auth/application/usecase"
-	postUsecase "github.com/homepage408/syncra/internal/domains/post/application/usecase"
+	authUsecase "github.com/homepage408/syncra/internal/domains/auth/usecase"
+	postUsecase "github.com/homepage408/syncra/internal/domains/post/usecase"
 )
 
 type Resolver struct {

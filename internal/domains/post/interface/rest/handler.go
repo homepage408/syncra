@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 
-	"github.com/homepage408/syncra/internal/domains/post/application/usecase"
+	"github.com/homepage408/syncra/internal/domains/post/usecase"
 	"github.com/homepage408/syncra/pkg/logger"
 )
 

@@ -12,9 +12,9 @@ import (
 
 type Routes struct {
 	httpRouter *gin.Engine
+	port       string
+	logger     logger.Logger
 	// graphQLHandler *handler.Server // Untuk GraphQL
-	port   string
-	logger logger.Logger
 }
 
 func SetupRoutes(authHandler *authRest.Handler, postHandler *postRest.Handler, log logger.Logger) *Routes {
@@ -40,10 +40,6 @@ func SetupRoutes(authHandler *authRest.Handler, postHandler *postRest.Handler, l
 	}
 
 	postGroup := r.Group("/api/v1/posts")
-	// postGroup.Use(func(ctx *gin.Context) {
-	// 	// Placeholder for auth middleware
-	// 	ctx.Next()
-	// }) // Uncomment and implement auth middleware as needed
 	{
 		postGroup.GET("", gin.WrapF(postHandler.ListPosts))
 		postGroup.POST("", gin.WrapF(postHandler.CreatePost))
