@@ -3,10 +3,11 @@ package bootstrap
 import (
 	"context"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
+	"github.com/homepage408/syncra/config"
 	authRest "github.com/homepage408/syncra/internal/domains/auth/interface/rest"
-	postRest "github.com/homepage408/syncra/internal/domains/post/interface/rest"
 	"github.com/homepage408/syncra/pkg/logger"
 )
 
@@ -14,11 +15,12 @@ type Routes struct {
 	httpRouter *gin.Engine
 	port       string
 	logger     logger.Logger
-	// graphQLHandler *handler.Server // Untuk GraphQL
 }
 
-func SetupRoutes(authHandler *authRest.Handler, postHandler *postRest.Handler, log logger.Logger) *Routes {
+func SetupRoutes(cfg *config.Config, authHandler *authRest.Handler, log logger.Logger) *Routes {
 	r := gin.Default()
+
+	port := strconv.Itoa(cfg.Server.Port)
 
 	// Middleware stack
 	// r.Use(middleware.Logger)
@@ -39,16 +41,9 @@ func SetupRoutes(authHandler *authRest.Handler, postHandler *postRest.Handler, l
 		authGroup.POST("/refresh", authHandler.RefreshToken)
 	}
 
-	postGroup := r.Group("/api/v1/posts")
-	{
-		postGroup.GET("", gin.WrapF(postHandler.ListPosts))
-		postGroup.POST("", gin.WrapF(postHandler.CreatePost))
-		postGroup.GET("/:id", gin.WrapF(postHandler.GetPost))
-	}
-
 	return &Routes{
 		httpRouter: r,
-		port:       ":4500",
+		port:       ":" + port,
 		logger:     log,
 	}
 }

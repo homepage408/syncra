@@ -2,7 +2,6 @@ package bootstrap
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"log"
 
@@ -11,15 +10,13 @@ import (
 	authRepo "github.com/homepage408/syncra/internal/domains/auth/infrastructure/persistence"
 	authRest "github.com/homepage408/syncra/internal/domains/auth/interface/rest"
 	authUsecase "github.com/homepage408/syncra/internal/domains/auth/usecase"
-	postRepo "github.com/homepage408/syncra/internal/domains/post/infrastructure/persistence"
-	postRest "github.com/homepage408/syncra/internal/domains/post/interface/rest"
-	postUsecase "github.com/homepage408/syncra/internal/domains/post/usecase"
 	"github.com/homepage408/syncra/pkg/logger"
+	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
 )
 
 type Application struct {
-	db     *sql.DB
+	db     *sqlx.DB
 	logger logger.Logger
 	routes *Routes // HTTP + GraphQL routes
 }
@@ -41,34 +38,32 @@ func NewApplication(ctx context.Context) (*Application, error) {
 	log := logger.New(cfg.LogLevel)
 
 	// ✅ STEP 3: Initialize database (independent)
-	db, err := initDatabase(ctx, cfg, log)
+	sqlDB, err := initDatabase(ctx, cfg, log)
 	if err != nil {
 		return nil, fmt.Errorf("database init error: %w", err)
 	}
 
-	// ✅ STEP 4: Create queries (depends on db)
-	queries := sqlc.New(db)
+	// ✅ STEP 4: Create queries (depends on sqlDB)
+	queries := sqlc.New(sqlDB)
 
 	// ✅ STEP 5: Initialize repositories (depends on queries)
 	authRepository := authRepo.New(queries, log)
-	postRepository := postRepo.New(queries, log)
 
 	// ✅ STEP 6: Initialize use cases (depends on repositories)
 	authService := authUsecase.New(authRepository, log)
-	postService := postUsecase.New(postRepository, log)
 
 	// ✅ STEP 7: Initialize HTTP handlers (depends on use cases)
 	authHandler := authRest.New(authService, log)
-	postHandler := postRest.New(postService, log)
+	// postHandler := postRest.New(postService, log)
 
 	// ✅ STEP 8: Setup routes
-	routes := SetupRoutes(authHandler, postHandler, log)
+	routes := SetupRoutes(cfg, authHandler, log)
 
 	// ✅ STEP 9: Setup GraphQL
-	setupGraphQL(routes, authService, postService)
+	setupGraphQL(routes, authService)
 
 	return &Application{
-		db:     db,
+		db:     sqlDB,
 		logger: log,
 		routes: routes,
 	}, nil

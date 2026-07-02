@@ -9,11 +9,10 @@ import (
 	graph "github.com/homepage408/syncra/graph/generated"
 	resolver "github.com/homepage408/syncra/graph/resolver"
 	authUsecase "github.com/homepage408/syncra/internal/domains/auth/usecase"
-	postUsecase "github.com/homepage408/syncra/internal/domains/post/usecase"
 )
 
-func NewGraphQLHandlers(authSvc *authUsecase.Service, postSvc *postUsecase.Service) (http.Handler, http.Handler) {
-	gqlResolver := resolver.NewResolver(authSvc, postSvc)
+func NewGraphQLHandlers(authSvc *authUsecase.Service) (http.Handler, http.Handler) {
+	gqlResolver := resolver.NewResolver(authSvc)
 	_ = gqlResolver
 
 	graphqlServer := handler.NewDefaultServer(graph.NewExecutableSchema(graph.Config{

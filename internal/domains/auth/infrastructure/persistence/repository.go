@@ -24,28 +24,28 @@ func (r *PostgresUserRepository) FindByEmail(ctx context.Context, email string) 
 	if err != nil {
 		return nil, err
 	}
-	if user == nil {
+	if user.Email == "" {
 		return nil, errors.New("user not found")
 	}
 	return &entity.User{
-		ID:           user.ID,
+		// ID:           user.ID,
 		Email:        user.Email,
 		PasswordHash: user.PasswordHash,
-		Role:         user.Role,
-		IsActive:     user.IsActive,
-		CreatedAt:    user.CreatedAt,
-		UpdatedAt:    user.UpdatedAt,
+		// Role:         user.Role,
+		// IsActive:     user.IsActive,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
 	}, nil
 }
 
 func (r *PostgresUserRepository) Save(ctx context.Context, user *entity.User) error {
 	return r.queries.CreateUser(ctx, sqlc.CreateUserParams{
-		ID:           user.ID,
+		// ID:           user.ID,
 		Email:        user.Email,
 		PasswordHash: user.PasswordHash,
-		Role:         user.Role,
-		IsActive:     user.IsActive,
-		CreatedAt:    user.CreatedAt,
-		UpdatedAt:    user.UpdatedAt,
+		// Role:         user.Role,
+		// IsActive:     user.IsActive,
+		CreatedAt: user.CreatedAt,
+		UpdatedAt: user.UpdatedAt,
 	})
 }
