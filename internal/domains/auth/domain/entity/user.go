@@ -5,6 +5,8 @@ import "time"
 type User struct {
 	ID           string
 	Email        string
+	Username     string
+	FullName     string
 	PasswordHash string
 	Role         string
 	IsActive     bool
