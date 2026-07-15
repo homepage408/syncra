@@ -12,36 +12,72 @@ import (
 	"github.com/google/uuid"
 )
 
+const checkEmailAndUsernameExisting = `-- name: CheckEmailAndUsernameExisting :one
+SELECT
+    EXISTS (
+        SELECT 1
+        FROM users as u
+        WHERE
+            u.email = $1 and deleted_at IS NULL
+    ) AS email_exists,
+    EXISTS (
+        SELECT 1
+        FROM users as u
+        WHERE
+            u.username = $2 and deleted_at IS NULL
+    ) AS username_exists
+`
+
+type CheckEmailAndUsernameExistingParams struct {
+	Email    string `json:"email"`
+	Username string `json:"username"`
+}
+
+type CheckEmailAndUsernameExistingRow struct {
+	EmailExists    bool `json:"email_exists"`
+	UsernameExists bool `json:"username_exists"`
+}
+
+func (q *Queries) CheckEmailAndUsernameExisting(ctx context.Context, arg CheckEmailAndUsernameExistingParams) (CheckEmailAndUsernameExistingRow, error) {
+	row := q.db.QueryRowContext(ctx, checkEmailAndUsernameExisting, arg.Email, arg.Username)
+	var i CheckEmailAndUsernameExistingRow
+	err := row.Scan(&i.EmailExists, &i.UsernameExists)
+	return i, err
+}
+
 const createUser = `-- name: CreateUser :exec
 INSERT INTO
     users (
         id,
         email,
-        password_hash,
-        is_verified,
-        created_at,
-        updated_at
+        username,
+        full_name,
+        password_hash
     )
-VALUES ($1, $2, $3, $4, $5, $6)
+VALUES (
+        $1,
+        $2,
+        $3,
+        $4,
+        $5
+    )
 `
 
 type CreateUserParams struct {
 	ID           uuid.UUID `json:"id"`
 	Email        string    `json:"email"`
+	Username     string    `json:"username"`
+	FullName     string    `json:"full_name"`
 	PasswordHash string    `json:"password_hash"`
-	IsVerified   bool      `json:"is_verified"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 	_, err := q.db.ExecContext(ctx, createUser,
 		arg.ID,
 		arg.Email,
+		arg.Username,
+		arg.FullName,
 		arg.PasswordHash,
-		arg.IsVerified,
-		arg.CreatedAt,
-		arg.UpdatedAt,
 	)
 	return err
 }
@@ -50,19 +86,23 @@ const getUserByEmail = `-- name: GetUserByEmail :one
 SELECT
     id,
     email,
+    username,
+    full_name,
     password_hash,
     is_verified,
     created_at,
     updated_at
 FROM users
 WHERE
-    email = $1
+    email = $1 and deleted_at IS NULL
 LIMIT 1
 `
 
 type GetUserByEmailRow struct {
 	ID           uuid.UUID `json:"id"`
 	Email        string    `json:"email"`
+	Username     string    `json:"username"`
+	FullName     string    `json:"full_name"`
 	PasswordHash string    `json:"password_hash"`
 	IsVerified   bool      `json:"is_verified"`
 	CreatedAt    time.Time `json:"created_at"`
@@ -75,6 +115,8 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (GetUserByEm
 	err := row.Scan(
 		&i.ID,
 		&i.Email,
+		&i.Username,
+		&i.FullName,
 		&i.PasswordHash,
 		&i.IsVerified,
 		&i.CreatedAt,
