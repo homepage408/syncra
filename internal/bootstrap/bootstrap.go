@@ -50,7 +50,7 @@ func NewApplication(ctx context.Context) (*Application, error) {
 	authRepository := authRepo.New(queries, log)
 
 	// ✅ STEP 6: Initialize use cases (depends on repositories)
-	authService := authUsecase.New(authRepository, log)
+	authService := authUsecase.New(authRepository, log, cfg)
 
 	// ✅ STEP 7: Initialize HTTP handlers (depends on use cases)
 	authHandler := authRest.New(authService, log)

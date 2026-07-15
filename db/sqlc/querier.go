@@ -6,12 +6,18 @@ package sqlc
 
 import (
 	"context"
+
+	"github.com/google/uuid"
 )
 
 type Querier interface {
 	CheckEmailAndUsernameExisting(ctx context.Context, arg CheckEmailAndUsernameExistingParams) (CheckEmailAndUsernameExistingRow, error)
 	CreateUser(ctx context.Context, arg CreateUserParams) error
+	GetAllSessions(ctx context.Context, userID uuid.UUID) ([]GetAllSessionsRow, error)
+	GetSessionById(ctx context.Context, arg GetSessionByIdParams) (GetSessionByIdRow, error)
 	GetUserByEmail(ctx context.Context, email string) (GetUserByEmailRow, error)
+	SaveSession(ctx context.Context, arg SaveSessionParams) error
+	UpdateSession(ctx context.Context, id uuid.UUID) error
 }
 
 var _ Querier = (*Queries)(nil)

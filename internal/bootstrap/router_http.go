@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/homepage408/syncra/config"
 	authRest "github.com/homepage408/syncra/internal/domains/auth/interface/rest"
+	"github.com/homepage408/syncra/internal/shared/middleware"
 	"github.com/homepage408/syncra/pkg/logger"
 )
 
@@ -36,6 +37,8 @@ func SetupRoutes(cfg *config.Config, authHandler *authRest.Handler, log logger.L
 
 	authGroup := r.Group("/api/v1/auth")
 	{
+		authGroup.GET("/sessions", middleware.Auth(), authHandler.GetActiveSessions)
+		authGroup.GET("/sessions/:id")
 		authGroup.POST("/login", authHandler.Login)
 		authGroup.POST("/register", authHandler.Register)
 		authGroup.POST("/refresh", authHandler.RefreshToken)
