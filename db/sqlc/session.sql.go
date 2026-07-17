@@ -140,7 +140,7 @@ func (q *Queries) SaveSession(ctx context.Context, arg SaveSessionParams) error 
 }
 
 const updateSession = `-- name: UpdateSession :exec
-UPDATE SESSIONS s SET s.revoked_at = now() WHERE s.id = $1
+UPDATE SESSIONS as s SET revoked_at = now() WHERE s.id = $1
 `
 
 func (q *Queries) UpdateSession(ctx context.Context, id uuid.UUID) error {

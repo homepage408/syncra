@@ -61,3 +61,7 @@ func (r *PostgresUserRepository) GetSessions(ctx context.Context, userID uuid.UU
 func (r *PostgresUserRepository) GetSessionById(ctx context.Context, userID, sessionID uuid.UUID) (sqlc.GetSessionByIdRow, error) {
 	return r.queries.GetSessionById(ctx, sqlc.GetSessionByIdParams{UserID: userID, ID: sessionID})
 }
+
+func (r *PostgresUserRepository) RemoveSession(ctx context.Context, sessionID uuid.UUID) error {
+	return r.queries.UpdateSession(ctx, sessionID)
+}

@@ -86,6 +86,7 @@ func (s *Service) Login(ctx context.Context, email, password, userAgent string) 
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
 		ExpiresIn:    expiresIn,
+		SessionId:    sessionID.String(),
 	}, nil
 }
 
@@ -188,5 +189,58 @@ func (s *Service) GetAcctiveSessions(ctx context.Context, accessToken string) ([
 		})
 	}
 
-	return response, err
+	return response, nil
+}
+
+func (s *Service) RemoveActiveSession(ctx context.Context, accessToken, sessionID string) error {
+	if s == nil || s.cfg == nil {
+		return fmt.Errorf("service config is not initialized")
+	}
+
+	if accessToken == "" {
+		return fmt.Errorf("token is required")
+	}
+
+	token := jwt.JWT{
+		SecretKey:           s.cfg.Token.JWTSecret,
+		ExpiresAccessToken:  s.cfg.Token.JWTExpiry,
+		ExpiresRefreshToken: s.cfg.Token.JWTRefreshExpiry,
+	}
+
+	tokenVal, err := token.ParseToken(accessToken)
+	if err != nil {
+		return err
+	}
+
+	userIDstr, ok := tokenVal["sub"].(string)
+	if !ok || userIDstr == "" {
+		return fmt.Errorf("invalid user ID in token")
+	}
+
+	userID, err := uuid.Parse(userIDstr)
+	if err != nil {
+		return fmt.Errorf("invalid user ID in token: %w", err)
+	}
+
+	sessionUUID, err := uuid.Parse(sessionID)
+	if err != nil {
+		return fmt.Errorf("invalid session ID: %w", err)
+	}
+
+	// repository
+	session, err := s.repo.GetSessionById(ctx, userID, sessionUUID)
+	if err != nil {
+		return fmt.Errorf("failed to get session: %w", err)
+	}
+
+	if session.RevokedAt.Valid {
+		return fmt.Errorf("session already revoked")
+	}
+
+	err = s.repo.RemoveSession(ctx, sessionUUID)
+	if err != nil {
+		return fmt.Errorf("failed to revoke session: %w", err)
+	}
+
+	return nil
 }

@@ -125,6 +125,37 @@ func (h *Handler) GetActiveSessions(c *gin.Context) {
 	})
 }
 
+func (h *Handler) RemoveActiveSession(c *gin.Context) {
+	tokenVal, exist := c.Get(constant.TokenContextKey)
+	if !exist {
+		c.JSON(http.StatusUnauthorized, response.ErrorResponse{
+			Message: "Token Not Found",
+			Code:    http.StatusUnauthorized,
+			Success: false,
+		})
+		return
+	}
+
+	token := tokenVal.(string)
+
+	err := h.service.RemoveActiveSession(c.Request.Context(), token, c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, response.ErrorResponse{
+			Message: err.Error(),
+			Code:    http.StatusUnauthorized,
+			Success: false,
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, response.SuccessResponse{
+		Code:    http.StatusOK,
+		Success: true,
+		Message: "User Sessions",
+		Data:    "",
+	})
+}
+
 func (h *Handler) RefreshToken(c *gin.Context) {
 	c.JSON(http.StatusOK, map[string]string{"message": "refresh endpoint"})
 }

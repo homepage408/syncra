@@ -27,4 +27,4 @@ WHERE
     AND s.revoked_at IS NULL;
 
 -- name: UpdateSession :exec
-UPDATE SESSIONS s SET s.revoked_at = now() WHERE s.id = $1;
+UPDATE SESSIONS as s SET revoked_at = now() WHERE s.id = $1;

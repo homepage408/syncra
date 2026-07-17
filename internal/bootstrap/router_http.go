@@ -38,7 +38,7 @@ func SetupRoutes(cfg *config.Config, authHandler *authRest.Handler, log logger.L
 	authGroup := r.Group("/api/v1/auth")
 	{
 		authGroup.GET("/sessions", middleware.Auth(), authHandler.GetActiveSessions)
-		authGroup.GET("/sessions/:id")
+		authGroup.DELETE("/sessions/:id", middleware.Auth(), authHandler.RemoveActiveSession)
 		authGroup.POST("/login", authHandler.Login)
 		authGroup.POST("/register", authHandler.Register)
 		authGroup.POST("/refresh", authHandler.RefreshToken)

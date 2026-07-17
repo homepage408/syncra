@@ -15,4 +15,5 @@ type UserRepository interface {
 	SaveSessions(ctx context.Context, params sqlc.SaveSessionParams) error
 	GetSessions(ctx context.Context, userID uuid.UUID) ([]sqlc.GetAllSessionsRow, error)
 	GetSessionById(ctx context.Context, userID, sessionID uuid.UUID) (sqlc.GetSessionByIdRow, error)
+	RemoveSession(ctx context.Context, sessionID uuid.UUID) error
 }
